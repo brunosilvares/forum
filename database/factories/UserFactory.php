@@ -14,36 +14,33 @@ use Faker\Generator as Faker;
 */
 
 $factory->define(App\User::class, function (Faker $faker) {
+    static $password;
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
-        'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
+        'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
     ];
 });
 
-
-$factory->define(App\Threads::class, function (Faker $faker) {
+$factory->define(App\Thread::class, function (Faker $faker) {
     return [
-        'title' => $faker->sentences,
+        'title' => $faker->sentence,
         'body' => implode(' ', $faker->paragraphs),
         'user_id' => function () {
             return factory(App\User::class)->create()->id;
         }
-
     ];
 });
 
-$factory->define(App\Replies::class, function (Faker $faker) {
+$factory->define(App\Reply::class, function (Faker $faker) {
     return [
-
         'body' => $faker->paragraph,
         'user_id' => function () {
             return factory(App\User::class)->create()->id;
         },
         'thread_id' => function () {
-            return factory(App\Threads::class)->create()->id;
+            return factory(App\Thread::class)->create()->id;
         }
-
     ];
 });
